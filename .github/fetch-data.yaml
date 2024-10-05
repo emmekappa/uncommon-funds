@@ -1,0 +1,37 @@
+name: Run Jupyter Notebook
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Scheduled to run every night at midnight
+  workflow_dispatch:
+
+jobs:
+  run_notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Setup poetry
+      uses: abatilo/actions-poetry@v2
+
+    - run: poetry install
+
+    - name: Run main.py
+      run: |
+        poetry run python main.py
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'data-refresher'
+        git config --global user.email 'noreply@github.com'
+        git pull
+        git add .
+        git commit -m "Updates quotation" || echo "No changes to commit"
+        git push
