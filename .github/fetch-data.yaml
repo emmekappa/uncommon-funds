@@ -1,4 +1,4 @@
-name: Run Jupyter Notebook
+name: Refresh quotations
 
 on:
   schedule:
