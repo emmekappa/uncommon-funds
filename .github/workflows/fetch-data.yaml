@@ -2,7 +2,7 @@ name: Refresh quotations
 
 on:
   schedule:
-    - cron: '* * * * *' # Scheduled to run every night at midnight
+    - cron: '0 0 * * *' # Scheduled to run every night at midnight
   workflow_dispatch:
 
 jobs:
