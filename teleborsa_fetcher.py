@@ -7,7 +7,7 @@ import os
 import sys
 
 def fetcher(url: str, filename: str) -> None:
-    sys.stdout.write(f"Fetching data from {url} and saving to {filename}... ")
+    sys.stdout.write(f"Fetching data from {url} and saving to {filename} (.csv, json)... ")
     if not url.endswith("/grafico"):
         raise Exception("The url must end with /grafico")
     response = requests.get(url)
@@ -35,11 +35,14 @@ def fetcher(url: str, filename: str) -> None:
 
     new_df = pd.DataFrame(data, columns=['Date', 'Price'])
 
-    if os.path.exists(filename):
-        existing_df = pd.read_csv(filename)
+    csv_filename = f"{filename}.csv"
+    if os.path.exists(csv_filename):
+        existing_df = pd.read_csv(csv_filename)
         combined_df = pd.concat([existing_df, new_df]).drop_duplicates(subset=['Date'], keep='last')
     else:
         combined_df = new_df
 
-    combined_df.to_csv(filename, index=False)
+    combined_df.to_csv(csv_filename, index=False)
+
+    combined_df.to_json(f"{filename}.json", orient='records', indent=2)
     sys.stdout.write("Done.\n")
