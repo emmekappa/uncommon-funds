@@ -1,10 +1,18 @@
-import requests
 import re
-from datetime import datetime
-import pandas as pd
 import json
-import os
 import sys
+import requests
+import pandas as pd
+import os
+from datetime import datetime
+
+
+# Sostituisce solo .numero con 0.numero, -.-numero con -0.numero, +.numero con +0.numero
+def fix_dot_numbers(s):
+    s = re.sub(r'(?<=\[|,)\s*\.(\d+)', r' 0.\1', s)
+    s = re.sub(r'([+-])\.(\d+)', r'\g<1>0.\2', s)
+    return s
+
 
 def fetcher(url: str, filename: str) -> None:
     sys.stdout.write(f"Fetching data from {url} and saving to {filename} (.csv, json)... ")
@@ -20,11 +28,10 @@ def fetcher(url: str, filename: str) -> None:
     pattern_snippet = r'historical:(\[\[.*\]\])'
     matches = re.findall(pattern_snippet, page_content, re.DOTALL | re.MULTILINE)
 
-
     if not matches:
         raise Exception("Cannot find historical data in the page")
 
-    entries = json.loads(matches[0])
+    entries = json.loads(fix_dot_numbers(matches[0]))
 
     data = []
     for entry in entries:
